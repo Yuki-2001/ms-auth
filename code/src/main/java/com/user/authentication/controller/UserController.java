@@ -209,5 +209,33 @@ public class UserController extends BaseController {
 		LOGGER.info("resetPassword() has been ended.");
 		return response;
 	}
+	
+	/**
+	 * @param userReqDto
+	 * @return
+	 * @throws ApplicationException
+	 */
+	@GetMapping(value = "/generate/credentials")
+	public ResponseEntity<?> generateUserCredentials() throws ApplicationException {
+
+		LOGGER.info("generateUserCredentials() has been started.");
+		ResponseEntity<?> response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+		Optional<CommonResponse> result = Optional.empty();
+		try {
+
+			result = userService.generateUserCredentials();
+			if (result.isPresent()) {
+				response = new ResponseEntity<>(result.get(), HttpStatus.OK);
+			}
+
+		} catch (ApplicationException ae) {
+			throw new ApplicationException(LayerException.CONTROLLER, ae.getMessage());
+		} catch (Exception e) {
+			throw new ApplicationException(LayerException.CONTROLLER, e.getMessage());
+		}
+		LOGGER.info("generateUserCredentials() has been ended.");
+		return response;
+	}
 
 }

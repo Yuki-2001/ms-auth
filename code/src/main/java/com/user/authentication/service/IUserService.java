@@ -40,6 +40,9 @@ public interface IUserService {
 	 * @param errors
 	 * @return
 	 */
-	Optional<Boolean> saveUserDetails(UserReqDto userReqDtoClean, Map<String, String> errors)throws ApplicationException;
+	Optional<Boolean> saveUserDetails(UserReqDto userReqDtoClean, Map<String, String> errors)
+			throws ApplicationException;
+
+	Optional<CommonResponse> generateUserCredentials() throws ApplicationException;
 
 }

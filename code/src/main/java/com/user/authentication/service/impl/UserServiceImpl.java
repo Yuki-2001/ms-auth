@@ -2,7 +2,10 @@ package com.user.authentication.service.impl;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -31,7 +34,9 @@ import com.user.authentication.common.utils.CommonResponse;
 import com.user.authentication.dto.ForgotReqDto;
 import com.user.authentication.dto.ResetReqDto;
 import com.user.authentication.dto.UserReqDto;
+import com.user.authentication.model.EmployeeDetails;
 import com.user.authentication.model.User;
+import com.user.authentication.repository.IEmployeeDetailsRepository;
 import com.user.authentication.repository.IUserRepository;
 import com.user.authentication.service.IUserService;
 
@@ -62,12 +67,15 @@ public class UserServiceImpl implements IUserService {
 
 	@Autowired
 	private ApplicationResourcesConfigProperties applicationResourcesConfigProperties;
-	
+
+	@Autowired
+	private IEmployeeDetailsRepository employeeDetailsRepository;
 
 	/**
 	 * (non-javaDoc)
 	 *
-	 * @see com.user.authentication.service.IUserService#saveUserDetails(com.user.authentication.dto.UserReqDto, java.util.Map)
+	 * @see com.user.authentication.service.IUserService#saveUserDetails(com.user.authentication.dto.UserReqDto,
+	 *      java.util.Map)
 	 */
 	@Override
 	public Optional<Boolean> saveUserDetails(UserReqDto userReqDtoClean, Map<String, String> errors)
@@ -77,13 +85,15 @@ public class UserServiceImpl implements IUserService {
 
 		try {
 
-			Optional<User> opt1 = userRepository.findByUserEmailAndStatus(userReqDtoClean.getUserEmail(), CommonConstants.IS_ACTIVE);
+			Optional<User> opt1 = userRepository.findByUserEmailAndStatus(userReqDtoClean.getUserEmail(),
+					CommonConstants.IS_ACTIVE);
 			if (opt1.isPresent()) {
 				errors.put("userEmail", "User Email already exist");
 				response = Optional.of(Boolean.FALSE);
 			}
-			
-			Optional<User> opt2 = userRepository.findByUserIdAndStatus(userReqDtoClean.getUserId(), CommonConstants.IS_ACTIVE);
+
+			Optional<User> opt2 = userRepository.findByUserIdAndStatus(userReqDtoClean.getUserId(),
+					CommonConstants.IS_ACTIVE);
 			if (opt2.isPresent()) {
 				errors.put("userId", "User Id already exist");
 				response = Optional.of(Boolean.FALSE);
@@ -279,7 +289,7 @@ public class UserServiceImpl implements IUserService {
 	 * 
 	 * @return unique token
 	 */
-	private String generateToken() {	
+	private String generateToken() {
 		StringBuilder token = new StringBuilder();
 
 		return token.append(UUID.randomUUID().toString()).append(UUID.randomUUID().toString()).toString();
@@ -308,6 +318,68 @@ public class UserServiceImpl implements IUserService {
 			sb.append(AB.charAt(rnd.nextInt(AB.length())));
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public Optional<CommonResponse> generateUserCredentials() throws ApplicationException {
+
+		LOGGER.info("generateUserCredentials method init");
+		Optional<CommonResponse> response = Optional.empty();
+
+		try {
+
+			List<EmployeeDetails> employeeDetailsList = employeeDetailsRepository.findAll();
+
+			List<User> userList = new ArrayList<>();
+			List<String> userIdList = new ArrayList<>();
+
+			for (EmployeeDetails employeeDetails : employeeDetailsList) {
+				// 17-12-2023 Should create Credentials for Employee's only
+				if (!TypesProxy.isBlankOrNull(employeeDetails.getEmailAddress())) {
+					Optional<User> userOpt = userRepository
+							.findByUserEmailAndStatusNot(employeeDetails.getEmailAddress(), CommonConstants.IS_DELETED);
+
+					if (userOpt.isEmpty()) {
+						User user = new User();
+
+						user.setUserId(employeeDetails.getEmployeeId());
+						user.setUserName(employeeDetails.getEmployeeName());
+						user.setUserEmail(employeeDetails.getEmailAddress());
+						user.setUserPassword(passwordEncoder().encode("Password"));
+						user.setUserDepartment(employeeDetails.getDepartmentName());
+						user.setLastLoginDate(ApplicationUtils.getSystemDateTime());
+						user.setLastPasswordUpdatedDate(ApplicationUtils.getSystemDateTime());
+						user.setStatus(CommonConstants.IS_ACTIVE);
+						user.setCreatedOn(ApplicationUtils.getSystemDateTime());
+						user.setCreatedBy("CUSTOM_FORM");
+						user.setIsEmailSent(false);
+
+						userList.add(user);
+						userIdList.add(user.getUserId());
+
+						LOGGER.info(employeeDetails.getEmployeeName());
+						LOGGER.info(employeeDetails.getEmployeeId());
+					}
+				}
+
+			}
+
+			if (!userList.isEmpty()) {
+				userRepository.saveAll(userList);
+			}
+
+			Map<String, List<String>> newUsers = new HashMap<>();
+			newUsers.put("Credentials Created for this Users", userIdList);
+			CommonResponse commonResponse = new CommonResponse("Success", HttpStatus.OK.value(),
+					HttpStatus.OK.getReasonPhrase(), newUsers);
+			response = Optional.of(commonResponse);
+
+		} catch (Exception e) {
+			throw new ApplicationException(LayerException.SERVICE, e.getMessage());
+		}
+		LOGGER.info("generateUserCredentials method end.");
+		return response;
+
 	}
 
 }
