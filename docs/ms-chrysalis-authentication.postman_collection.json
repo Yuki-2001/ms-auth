@@ -1,0 +1,205 @@
+{
+	"info": {
+		"_postman_id": "d555a47c-3c7e-4ace-a866-bb333b4a39fb",
+		"name": "ms-chrysalis-authentication",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "chrysalis-secret",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "chrysalis-client",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "srithar@gmail.com",
+							"type": "default"
+						},
+						{
+							"key": "password",
+							"value": "Password",
+							"type": "default"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ms-chrysalis-authentication-url}}/oauth/token",
+					"host": [
+						"{{ms-chrysalis-authentication-url}}"
+					],
+					"path": [
+						"oauth",
+						"token"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check Token",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "chrysalis-secret",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "chrysalis-client",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ms-chrysalis-authentication-url}}/oauth/check_token?token=948ccfc8-21d8-42f5-a72b-2a4cc91f82e8",
+					"host": [
+						"{{ms-chrysalis-authentication-url}}"
+					],
+					"path": [
+						"oauth",
+						"check_token"
+					],
+					"query": [
+						{
+							"key": "token",
+							"value": "948ccfc8-21d8-42f5-a72b-2a4cc91f82e8"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userName\":\"Srithar\",\n    \"userEmail\":\"srithar@gmail.com\",\n    \"userRole\":\"ADMIN\",\n    \"userPassword\":\"Password\",\n    \"userId\":\"sri-23\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ms-chrysalis-authentication-url}}/user/save",
+					"host": [
+						"{{ms-chrysalis-authentication-url}}"
+					],
+					"path": [
+						"user",
+						"save"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userName\":\"Srithar R\",\n    \"userEmail\":\"srithar@gmail.com\",\n    \"userRole\":\"ADMIN\",\n    \"userPassword\":\"Password\",\n    \"userStatus\":\"Active\",\n    \"userId\":\"sri-23\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ms-chrysalis-authentication-url}}/user/update",
+					"host": [
+						"{{ms-chrysalis-authentication-url}}"
+					],
+					"path": [
+						"user",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User By User Email",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ms-chrysalis-authentication-url}}/user/get/srithar@gmail.com",
+					"host": [
+						"{{ms-chrysalis-authentication-url}}"
+					],
+					"path": [
+						"user",
+						"get",
+						"srithar@gmail.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User By User Email",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{ms-chrysalis-authentication-url}}/user/delete/srithar2@gmail.com",
+					"host": [
+						"{{ms-chrysalis-authentication-url}}"
+					],
+					"path": [
+						"user",
+						"delete",
+						"srithar2@gmail.com"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

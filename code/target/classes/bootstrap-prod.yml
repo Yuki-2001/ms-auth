@@ -1,0 +1,78 @@
+---
+spring:
+  application:
+     name: ms-chrysalis-authentication
+  cloud:
+    config:
+      uri: ${spring_cloud_config_uri}
+      name: ms-chrysalis-authentication-config,chrysalis-db-config,email-config
+server:
+  servlet:
+    context-path: ${config.application.contextPath}
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+server:
+  port: ${config.application.port}
+logging:
+  file:
+    name: /opt/ms/logs/ms-chrysalis-authentication/ms-chrysalis-authentication.log
+  pattern: 
+    file: "%d %-5level [%thread] %logger : %msg%n"
+    console: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    #Business Packge
+    '[com.chrysalis.authentication]': INFO
+    #Test package
+    '[com.chrysalis.authentication.test]': INFO
+    #Microservice's configuration's common package
+    '[com.est]': INFO
+    #Common resuable infrastructure 
+    '[com.est.infra]': INFO
+    #Client to consume REST service from est-infra-email microservice
+    '[com.est.client.es]': INFO
+    #Client to consume REST service from est-da-utils microservice
+    '[com.est.client.da.utils]': INFO
+    #Spring framwork
+    '[org.springframework]': INFO
+    '[org.springframework.boot.env.PropertySourceLoader]': INFO
+    '[org.springframework.boot.web]': INFO
+    '[org.springframework.boot.web.embedded]': INFO
+    '[org.springframework.beans]': INFO
+    #Spring cloud
+    '[org.springframework.cloud]': INFO
+    #Spring web logs
+    '[org.springframework.web]': INFO
+    #Set as TRACE in order to see transaction information 
+    '[org.springframework.transaction]': INFO
+    #Set this logger as DEBUG mode in order to see transaction information such as 
+    #transaction creation, commit and rollback
+    '[org.springframework.orm]': INFO
+    '[org.springframework.jdbc]': INFO
+    #Sping data Logs
+    '[org.springframework.data]': INFO
+    #Spring data Test logs
+    '[org.springframework.test]': INFO
+    #Set as DEBUG/INFO to see default random password printed in console
+    '[org.springframework.boot.autconfigure.security]': INFO
+    #Rest docs
+    '[org.springframework.restdocs]': INFO
+    #Spring cache logs
+    '[org.springframework.cache]': INFO
+    #Hibernate logs
+    '[org.hibernate]': INFO
+    #Set as TRACE in order to see sql queries
+    '[org.hibernate.SQL]': INFO
+    #Set as TRACE in order to see sql query parameters
+    '[org.hibernate.type]': INFO
+    #Set as TRACE in order to see sql queries parameters values
+    '[org.hibernate.type.descriptor.sql.BasicBinder]': INFO
+    #Hikari
+    '[com.zaxxer.hikari]': INFO
+    #Thymeleaf
+    '[org.thymeleaf]': INFO
+    #Jetty
+    '[org.eclipse.jetty]': INFO
+    
